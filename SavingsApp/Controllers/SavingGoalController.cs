@@ -15,65 +15,38 @@ public class SavingGoalController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateSavingGoalDto dto)
     {
-        try
+        if (dto == null)
+            return BadRequest("Invalid request");
+
+        var goal = new SavingGoal
         {
-            if (dto == null)
-                return BadRequest("Invalid request");
+            UserId = dto.UserId,
+            GoalName = dto.GoalName,
+            TargetAmount = dto.TargetAmount,
+            DurationDays = dto.DurationDays,
+            SavingType = dto.SavingType
+        };
 
-            var goal = new SavingGoal
-            {
-                UserId = dto.UserId,
-                GoalName = dto.GoalName,
-                TargetAmount = dto.TargetAmount,
-                DurationDays = dto.DurationDays,
-                SavingType = dto.SavingType
-            };
+        var id = await _savingGoalService.CreateSavingGoalAsync(goal);
 
-            var id = await _savingGoalService.CreateSavingGoalAsync(goal);
-
-            return Ok(new
-            {
-                Id = id,
-                Message = "Saving goal created successfully"
-            });
-        }
-        catch (Exception ex)
+        return Ok(new
         {
-            return BadRequest(new
-            {
-                Error = ex.Message
-            });
-        }
-
+            Id = id,
+            Message = "Saving goal created successfully"
+        });
     }
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetDetails(int id, [FromQuery] int userId)
     {
-        try
-        {
-            var result = await _savingGoalService.GetGoalDetailsAsync(id, userId);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { error = ex.Message });
-        }
+        var result = await _savingGoalService.GetGoalDetailsAsync(id, userId);
+        return Ok(result);
     }
 
     [HttpGet]
     public async Task<IActionResult> GetUserGoals([FromQuery] int userId)
     {
-        try
-        {
-            var result = await _savingGoalService.GetUserGoalsAsync(userId);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { error = ex.Message });
-        }
+        var result = await _savingGoalService.GetUserGoalsAsync(userId);
+        return Ok(result);
     }
-
 }
-
-

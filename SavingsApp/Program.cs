@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SavingsApp.Data;
+using SavingsApp.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,7 @@ builder.Services.AddScoped<ISavingTransactionService, SavingTransactionService>(
 
 
 var app = builder.Build();
+app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

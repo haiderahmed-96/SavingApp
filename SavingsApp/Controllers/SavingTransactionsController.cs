@@ -12,33 +12,24 @@ public class SavingTransactionsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add(AddSavingTransactionDto dto)
+    public async Task<IActionResult> Add([FromBody] AddSavingTransactionDto dto)
     {
-        try
-        {
-            await _service.AddTransactionAsync(dto);
-            return Ok(new { message = "Amount added successfully" });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { error = ex.Message });
-        }
-    }
-    
+        await _service.AddTransactionAsync(dto);
 
-        [HttpPost("withdraw")]
-        public async Task<IActionResult> Withdraw(WithdrawDto dto)
+        return Ok(new
         {
-            try
-            {
-                await _service.WithdrawAsync(dto);
-                return Ok("Withdraw completed successfully");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+            message = "Amount added successfully"
+        });
     }
 
+    [HttpPost("withdraw")]
+    public async Task<IActionResult> Withdraw([FromBody] WithdrawDto dto)
+    {
+        await _service.WithdrawAsync(dto);
 
+        return Ok(new
+        {
+            message = "Withdraw completed successfully"
+        });
+    }
+}
