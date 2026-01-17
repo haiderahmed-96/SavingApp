@@ -44,7 +44,36 @@ public class SavingGoalController : ControllerBase
                 Error = ex.Message
             });
         }
+
     }
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetDetails(int id, [FromQuery] int userId)
+    {
+        try
+        {
+            var result = await _savingGoalService.GetGoalDetailsAsync(id, userId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetUserGoals([FromQuery] int userId)
+    {
+        try
+        {
+            var result = await _savingGoalService.GetUserGoalsAsync(userId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
 }
 
 

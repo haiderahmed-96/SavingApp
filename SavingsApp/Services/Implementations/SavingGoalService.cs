@@ -14,31 +14,21 @@ public class SavingGoalService : ISavingGoalService
 
     public async Task<int> CreateSavingGoalAsync(SavingGoal goal)
     {
-
-        // 1️⃣ تحقق من اليوزر
-        var users = await _context.Users.ToListAsync();
-        Console.WriteLine($"Users count: {users.Count}");
-
-        var userExists = await _context.Users
-            .AnyAsync(u => u.Id == goal.UserId);
-
+        var userExists = await _context.Users.AnyAsync(u => u.Id == goal.UserId);
         if (!userExists)
             throw new Exception("User not found");
 
-        // 2️⃣ تحقق من المبالغ
         if (goal.TargetAmount <= 0)
             throw new Exception("Target amount must be greater than zero");
 
         if (goal.DurationDays <= 0)
             throw new Exception("Duration days must be greater than zero");
 
-        // 3️⃣ لا تخلي EF يدوخ
         goal.Id = 0;
         goal.CurrentAmount = 0;
         goal.Status = SavingStatus.Active;
         goal.CreatedAt = DateTime.UtcNow;
 
-        // 4️⃣ افصل العلاقات
         goal.User = null;
         goal.SavingTransactions = null;
         goal.EventSaving = null;
@@ -50,4 +40,60 @@ public class SavingGoalService : ISavingGoalService
 
         return goal.Id;
     }
+
+    public async Task<SavingGoalDetailsDto> GetGoalDetailsAsync(int goalId, int userId)
+    {
+        var goal = await _context.SavingGoals
+            .AsNoTracking()
+            .Include(g => g.SavingTransactions)
+            .FirstOrDefaultAsync(g => g.Id == goalId && g.UserId == userId);
+
+        if (goal == null)
+            throw new Exception("Saving goal not found");
+
+        return new SavingGoalDetailsDto
+        {
+            Id = goal.Id,
+            GoalName = goal.GoalName,
+            TargetAmount = goal.TargetAmount,
+            CurrentAmount = goal.CurrentAmount,
+            DurationDays = goal.DurationDays,
+            SavingType = goal.SavingType,
+            Status = goal.Status,
+            CreatedAt = goal.CreatedAt,
+            Transactions = goal.SavingTransactions
+                .OrderByDescending(t => t.CreatedAt)
+                .Select(t => new SavingTransactionDto
+                {
+                    Id = t.Id,
+                    Amount = t.Amount,
+                    ContributionType = (int)t.ContributionType,
+                    CreatedAt = t.CreatedAt
+                })
+                .ToList()
+        };
+    }
+   
+
+public async Task<List<SavingGoalListItemDto>> GetUserGoalsAsync(int userId)
+{
+    var goals = await _context.SavingGoals
+        .Where(g => g.UserId == userId)
+        .OrderByDescending(g => g.CreatedAt)
+        .ToListAsync();
+
+    return goals.Select(g => new SavingGoalListItemDto
+    {
+        Id = g.Id,
+        GoalName = g.GoalName,
+        TargetAmount = g.TargetAmount,
+        CurrentAmount = g.CurrentAmount,
+        DurationDays = g.DurationDays,
+        SavingType = g.SavingType,
+        Status = g.Status,
+        CreatedAt = g.CreatedAt,
+        ProgressPercent = g.TargetAmount == 0 ? 0 : Math.Round((g.CurrentAmount / g.TargetAmount) * 100, 2)
+    }).ToList();
+}
+
 }
