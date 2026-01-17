@@ -24,4 +24,21 @@ public class SavingTransactionsController : ControllerBase
             return BadRequest(new { error = ex.Message });
         }
     }
-}
+    
+
+        [HttpPost("withdraw")]
+        public async Task<IActionResult> Withdraw(WithdrawDto dto)
+        {
+            try
+            {
+                await _service.WithdrawAsync(dto);
+                return Ok("Withdraw completed successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+    }
+
+
