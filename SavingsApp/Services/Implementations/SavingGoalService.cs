@@ -95,5 +95,34 @@ public async Task<List<SavingGoalListItemDto>> GetUserGoalsAsync(int userId)
         ProgressPercent = g.TargetAmount == 0 ? 0 : Math.Round((g.CurrentAmount / g.TargetAmount) * 100, 2)
     }).ToList();
 }
+    public async Task UpdateSavingGoalAsync(int goalId, UpdateSavingGoalDto dto)
+    {
+        var goal = await _context.SavingGoals
+            .FirstOrDefaultAsync(g => g.Id == goalId && g.UserId == dto.UserId);
+
+        if (goal == null)
+            throw new Exception("Saving goal not found");
+
+        if (string.IsNullOrWhiteSpace(dto.GoalName))
+            throw new Exception("Goal name is required");
+
+        if (dto.TargetAmount <= 0)
+            throw new Exception("Target amount must be greater than zero");
+
+        if (dto.DurationDays <= 0)
+            throw new Exception("Duration days must be greater than zero");
+
+        // CurrentAmount
+        goal.GoalName = dto.GoalName;
+        goal.TargetAmount = dto.TargetAmount;
+        goal.DurationDays = dto.DurationDays;
+
+        // (اختياري) إذا كان الهدف مكتمل قبل ورفعنا TargetAmount فوق CurrentAmount
+        if (goal.Status == SavingStatus.Completed && goal.CurrentAmount < goal.TargetAmount)
+            goal.Status = SavingStatus.Active;
+
+        await _context.SaveChangesAsync();
+    }
+
 
 }
