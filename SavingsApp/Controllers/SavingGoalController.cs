@@ -49,4 +49,11 @@ public class SavingGoalController : ControllerBase
         var result = await _savingGoalService.GetUserGoalsAsync(userId);
         return Ok(result);
     }
+     [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, UpdateSavingGoalDto dto)
+    {
+        await _savingGoalService.UpdateSavingGoalAsync(id, dto);
+        return Ok(new { message = "Saving goal updated successfully" });
+    }
+
 }

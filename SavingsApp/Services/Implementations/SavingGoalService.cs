@@ -117,7 +117,7 @@ public async Task<List<SavingGoalListItemDto>> GetUserGoalsAsync(int userId)
         goal.TargetAmount = dto.TargetAmount;
         goal.DurationDays = dto.DurationDays;
 
-        // (اختياري) إذا كان الهدف مكتمل قبل ورفعنا TargetAmount فوق CurrentAmount
+       
         if (goal.Status == SavingStatus.Completed && goal.CurrentAmount < goal.TargetAmount)
             goal.Status = SavingStatus.Active;
 

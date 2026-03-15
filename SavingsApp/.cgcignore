@@ -1,0 +1,31 @@
+# --- .NET Core / C# specific ---
+bin/
+obj/
+publish/
+*.exe
+*.dll
+*.pdb
+*.nupkg
+
+# --- IDE & Editor files ---
+.vs/
+.vscode/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+
+# --- Dependencies & Packages ---
+packages/
+node_modules/
+.nuget/
+
+# --- Build & CI/CD ---
+TestResults/
+*.log
+.lastcodeanalysislastrun
+.sonarqube/
+
+# --- OS specific ---
+.DS_Store
+Thumbs.db
