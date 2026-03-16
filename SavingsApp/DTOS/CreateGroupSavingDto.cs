@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
-public class CreateEventSavingDto
+public class CreateGroupSavingDto
 {
     [Required(ErrorMessage = "SavingGoalId is required")]
     [Range(1, int.MaxValue, ErrorMessage = "SavingGoalId must be greater than 0")]
@@ -9,11 +9,4 @@ public class CreateEventSavingDto
     [Required(ErrorMessage = "UserId is required")]
     [Range(1, int.MaxValue, ErrorMessage = "UserId must be greater than 0")]
     public int UserId { get; set; }
-
-    [Required(ErrorMessage = "EventDate is required")]
-    public DateTime EventDate { get; set; }
-
-    [Required(ErrorMessage = "EventType is required")]
-    [Range(1, 7, ErrorMessage = "EventType must be a valid enum value")]
-    public int EventType { get; set; }
 }

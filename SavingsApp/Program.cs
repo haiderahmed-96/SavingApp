@@ -10,6 +10,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(Options => Options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<ISavingGoalService, SavingGoalService>();
 builder.Services.AddScoped<ISavingTransactionService, SavingTransactionService>();
+builder.Services.AddScoped<IEventSavingService, EventSavingService>();
 
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowAll", policy => {
