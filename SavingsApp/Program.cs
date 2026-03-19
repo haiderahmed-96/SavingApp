@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SavingsApp.Data;
 using SavingsApp.Middlewares;
+using SavingsApp.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(Options => Options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Add AutoMapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+// Add Services
 builder.Services.AddScoped<ISavingGoalService, SavingGoalService>();
 builder.Services.AddScoped<ISavingTransactionService, SavingTransactionService>();
 builder.Services.AddScoped<IEventSavingService, EventSavingService>();

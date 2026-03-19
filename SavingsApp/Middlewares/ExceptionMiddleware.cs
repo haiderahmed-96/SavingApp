@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Text.Json;
+using SavingsApp.Exceptions;
 
 namespace SavingsApp.Middlewares
 {
@@ -28,13 +29,7 @@ namespace SavingsApp.Middlewares
         {
             context.Response.ContentType = "application/json";
 
-            // Default
-            var statusCode = (int)HttpStatusCode.InternalServerError;
-
-            // نقدر نفرق بعدين بين أنواع أخطاء
-            //   Exception من السيرفس تعتبر BadRequest
-            statusCode = (int)HttpStatusCode.BadRequest;
-
+            var statusCode = GetStatusCode(ex);
             context.Response.StatusCode = statusCode;
 
             var response = new
@@ -46,5 +41,15 @@ namespace SavingsApp.Middlewares
 
             await context.Response.WriteAsync(JsonSerializer.Serialize(response));
         }
+
+        private static int GetStatusCode(Exception ex) =>
+            ex switch
+            {
+                NotFoundException => (int)HttpStatusCode.NotFound,
+                BadRequestException => (int)HttpStatusCode.BadRequest,
+                UnauthorizedException => (int)HttpStatusCode.Unauthorized,
+                ConflictException => (int)HttpStatusCode.Conflict,
+                _ => (int)HttpStatusCode.InternalServerError
+            };
     }
 }

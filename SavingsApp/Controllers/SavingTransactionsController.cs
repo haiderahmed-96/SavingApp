@@ -11,6 +11,9 @@ public class SavingTransactionsController : ControllerBase
         _service = service;
     }
 
+    /// <summary>
+    /// Add funds to a saving goal
+    /// </summary>
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] AddSavingTransactionDto dto)
     {
@@ -22,6 +25,9 @@ public class SavingTransactionsController : ControllerBase
         });
     }
 
+    /// <summary>
+    /// Withdraw funds from a saving goal
+    /// </summary>
     [HttpPost("withdraw")]
     public async Task<IActionResult> Withdraw([FromBody] WithdrawDto dto)
     {
