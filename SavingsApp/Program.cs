@@ -2,6 +2,8 @@
 using SavingsApp.Data;
 using SavingsApp.Middlewares;
 using SavingsApp.Mappings;
+using SavingsApp.Services.Interfaces;
+using SavingsApp.Services.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,7 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<ISavingGoalService, SavingGoalService>();
 builder.Services.AddScoped<ISavingTransactionService, SavingTransactionService>();
 builder.Services.AddScoped<IEventSavingService, EventSavingService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowAll", policy => {

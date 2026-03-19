@@ -2,14 +2,17 @@
 using SavingsApp.Data;
 using SavingsApp.Models.Entities;
 using SavingsApp.Models.Enums;
+using SavingsApp.Services.Interfaces;
 
 public class SavingGoalService : ISavingGoalService
 {
     private readonly AppDbContext _context;
+    private readonly INotificationService _notificationService;
 
-    public SavingGoalService(AppDbContext context)
+    public SavingGoalService(AppDbContext context, INotificationService notificationService)
     {
         _context = context;
+        _notificationService = notificationService;
     }
 
     public async Task<int> CreateSavingGoalAsync(SavingGoal goal)
@@ -37,6 +40,19 @@ public class SavingGoalService : ISavingGoalService
 
         await _context.SavingGoals.AddAsync(goal);
         await _context.SaveChangesAsync();
+
+        // Create notification
+        var notification = new Notification
+        {
+            UserId = goal.UserId,
+            Title = "🎯 New Saving Goal Created",
+            Message = $"Your new goal '{goal.GoalName}' has been created successfully!",
+            Type = NotificationType.GoalCreated,
+            RelatedEntityId = goal.Id,
+            RelatedEntityType = "SavingGoal"
+        };
+
+        await _notificationService.CreateNotificationAsync(notification);
 
         return goal.Id;
     }

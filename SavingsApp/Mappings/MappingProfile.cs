@@ -32,6 +32,10 @@ namespace SavingsApp.Mappings
 
             // GroupMember Mappings
             CreateMap<AddGroupMemberDto, GroupMember>();
+
+            // Notification Mappings
+            CreateMap<CreateNotificationDto, Notification>();
+            CreateMap<Notification, NotificationDto>();
         }
     }
 }

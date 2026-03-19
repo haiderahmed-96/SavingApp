@@ -1,7 +1,7 @@
 ﻿namespace SavingsApp.Data
 {
     using Microsoft.EntityFrameworkCore;
-   
+
     using SavingsApp.Models.Entities;
 
     public class AppDbContext : DbContext
@@ -18,6 +18,7 @@
         public DbSet<TravelSaving> TravelSavings { get; set; }
         public DbSet<GroupSaving> GroupSavings { get; set; }
         public DbSet<GroupMember> GroupMembers { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -71,6 +72,13 @@
                 .WithMany(x => x.GroupMembers)
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // User -> Notifications
+            modelBuilder.Entity<Notification>()
+                .HasOne(x => x.User)
+                .WithMany(x => x.Notifications)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 

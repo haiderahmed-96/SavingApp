@@ -2,14 +2,17 @@
 using SavingsApp.Data;
 using SavingsApp.Models.Entities;
 using SavingsApp.Models.Enums;
+using SavingsApp.Services.Interfaces;
 
 public class SavingTransactionService : ISavingTransactionService
 {
     private readonly AppDbContext _context;
+    private readonly INotificationService _notificationService;
 
-    public SavingTransactionService(AppDbContext context)
+    public SavingTransactionService(AppDbContext context, INotificationService notificationService)
     {
         _context = context;
+        _notificationService = notificationService;
     }
 
     public async Task AddTransactionAsync(AddSavingTransactionDto dto)
@@ -44,7 +47,37 @@ public class SavingTransactionService : ISavingTransactionService
 
         _context.SavingTransactions.Add(transaction);
         await _context.SaveChangesAsync();
+
+        // Create notification
+        var notification = new Notification
+        {
+            UserId = dto.UserId,
+            Title = "💰 Amount Added",
+            Message = $"${dto.Amount} has been added to '{goal.GoalName}'",
+            Type = NotificationType.AmountAdded,
+            RelatedEntityId = goal.Id,
+            RelatedEntityType = "SavingGoal"
+        };
+
+        await _notificationService.CreateNotificationAsync(notification);
+
+        // Check if goal is completed
+        if (goal.Status == SavingStatus.Completed)
+        {
+            var completionNotification = new Notification
+            {
+                UserId = dto.UserId,
+                Title = "🎉 Goal Reached!",
+                Message = $"Congratulations! You've reached your '{goal.GoalName}' goal!",
+                Type = NotificationType.GoalReached,
+                RelatedEntityId = goal.Id,
+                RelatedEntityType = "SavingGoal"
+            };
+
+            await _notificationService.CreateNotificationAsync(completionNotification);
+        }
     }
+
     public async Task WithdrawAsync(WithdrawDto dto)
     {
         var goal = await _context.SavingGoals
@@ -75,5 +108,18 @@ public class SavingTransactionService : ISavingTransactionService
         _context.SavingTransactions.Add(transaction);
 
         await _context.SaveChangesAsync();
+
+        // Create notification
+        var notification = new Notification
+        {
+            UserId = dto.UserId,
+            Title = "💸 Amount Withdrawn",
+            Message = $"${dto.Amount} has been withdrawn from '{goal.GoalName}'",
+            Type = NotificationType.AmountWithdrawn,
+            RelatedEntityId = goal.Id,
+            RelatedEntityType = "SavingGoal"
+        };
+
+        await _notificationService.CreateNotificationAsync(notification);
     }
 }

@@ -16,6 +16,7 @@
         public ICollection<SavingGoal> SavingGoals { get; set; }
         public ICollection<SavingTransaction> SavingTransactions { get; set; }
         public ICollection<GroupMember> GroupMembers { get; set; }
+        public ICollection<Notification> Notifications { get; set; }
     }
 
 }
